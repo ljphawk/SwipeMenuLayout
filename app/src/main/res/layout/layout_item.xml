@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ljp.swipemenulayout.SwipeMenuLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/swipe"
+    android:layout_height="60dp"
+    android:background="#ff0">
+
+    <LinearLayout
+        android:id="@+id/ll_item"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#e9e9e9"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#fff"
+        android:text="222"/>
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#f00"
+        android:text="删除"/>
+
+</com.ljp.swipemenulayout.SwipeMenuLayout>
