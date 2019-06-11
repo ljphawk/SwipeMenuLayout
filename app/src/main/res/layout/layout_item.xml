@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.ljp.swipemenulayout.SwipeMenuLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe"
+    android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="#ff0">
+    android:background="#ff0"
+    app:isClickMenuAndClose="true"
+    app:isOpenChoke="false">
 
     <LinearLayout
         android:id="@+id/ll_item"
@@ -17,8 +20,6 @@
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
-
     </LinearLayout>
 
     <TextView

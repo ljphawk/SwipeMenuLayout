@@ -55,6 +55,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "1111", Toast.LENGTH_SHORT).show();
+                viewHolder.mSwipe.expandMenuAnim();
             }
         });
         viewHolder.mLl_item.setOnLongClickListener(new View.OnLongClickListener() {

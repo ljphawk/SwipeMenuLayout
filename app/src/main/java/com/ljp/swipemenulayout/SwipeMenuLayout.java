@@ -3,6 +3,7 @@ package com.ljp.swipemenulayout;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,13 +27,6 @@ import android.view.animation.OvershootInterpolator;
  *
  * 禁止侧滑功能 isEnableSwipe设置false
  * 默认左滑打开菜单，想要右滑打开菜单的话 isEnableLeftMenu设置true
- *
- *TODO  还需增加attrs中配置
- * 是否开启 侧滑
- * 是否开启 阻塞
- * 是否开启 菜单在左侧不在右侧
- * 是否开启 点击菜单内容后自动关闭
- *
  *
  *@更新者         $Author$
  *@更新时间         $Date$
@@ -85,6 +79,13 @@ public class SwipeMenuLayout extends ViewGroup {
     public SwipeMenuLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SwipeMenuLayout, defStyleAttr, 0);
+        isEnableSwipe = ta.getBoolean(R.styleable.SwipeMenuLayout_isEnableSwipe, true);
+        isEnableLeftMenu = ta.getBoolean(R.styleable.SwipeMenuLayout_isEnableLeftMenu, false);
+        isOpenChoke = ta.getBoolean(R.styleable.SwipeMenuLayout_isOpenChoke, true);
+        isClickMenuAndClose = ta.getBoolean(R.styleable.SwipeMenuLayout_isClickMenuAndClose, false);
+        ta.recycle();
+
         init();
     }
 
@@ -102,8 +103,8 @@ public class SwipeMenuLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //让自己可点击
-//        setClickable(true);
+        //让自己可点击 一定要设置
+        setClickable(true);
         //获取测量模式
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         //内容view的宽度
@@ -116,9 +117,9 @@ public class SwipeMenuLayout extends ViewGroup {
             if (childAt.getVisibility() == View.GONE) {
                 continue;
             }
-//            childAt.setClickable(true);
+            // 一定要设置
+            childAt.setClickable(true);
             LayoutParams layoutParams = childAt.getLayoutParams();
-            Log.d(TAG, "onMeasure: " + layoutParams.height);
             if (i == 0) {
                 //让itemView的宽度为parentView的宽度
                 layoutParams.width = getMeasuredWidth();
@@ -174,6 +175,7 @@ public class SwipeMenuLayout extends ViewGroup {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d(TAG, "dispatchTouchEvent: " + ev.getAction());
         //如果关闭了侧滑 直接super
         if (!this.isEnableSwipe) {
             return super.dispatchTouchEvent(ev);
@@ -238,6 +240,8 @@ public class SwipeMenuLayout extends ViewGroup {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                //多指触摸状态改变
+                isFingerTouch = false;
                 if (!chokeIntercept) {
                     //unitis值为1000（毫秒）时间单位内运动了多少个像素 正负最多为mScaledMaximumFlingVelocity
                     verTracker.computeCurrentVelocity(1000, mScaledMaximumFlingVelocity);
@@ -273,8 +277,6 @@ public class SwipeMenuLayout extends ViewGroup {
                         }
                     }
                 }
-                //多指触摸状态改变
-                isFingerTouch = false;
                 //释放VelocityTracker
                 recycleVelocityTracker();
                 break;
