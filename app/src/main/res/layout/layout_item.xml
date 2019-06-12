@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="80dp"
     android:background="#ff0"
     app:isClickMenuAndClose="true"
     app:isOpenChoke="false">
@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/ll_item"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:background="#e9e9e9"
         android:orientation="horizontal">
 
@@ -24,15 +24,15 @@
 
     <TextView
         android:id="@+id/tv2"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="#fff"
         android:text="222"/>
 
     <TextView
         android:id="@+id/tv3"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="#f00"
         android:text="删除"/>
 

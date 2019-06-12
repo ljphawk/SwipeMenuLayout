@@ -1,11 +1,12 @@
 package com.ljp.swipemenulayout;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -51,6 +52,8 @@ public class SwipeMenuLayout extends ViewGroup {
     private boolean isFingerTouch = false;
     //展开 关闭的动画
     private ValueAnimator mExpandAnim, mCloseAnim;
+    //动画时间
+    private int animDuration = 300;
     //阻塞拦截的一个控制变量
     private boolean chokeIntercept = false;
     /**
@@ -67,6 +70,7 @@ public class SwipeMenuLayout extends ViewGroup {
     private boolean isEnableLeftMenu = false;
     //是否开启点击菜单内容后自动关闭菜单  默认false
     private boolean isClickMenuAndClose = false;
+    private SwipeMenuStateListener mSwipeMenuStateListener;
 
     public SwipeMenuLayout(Context context) {
         this(context, null);
@@ -175,7 +179,6 @@ public class SwipeMenuLayout extends ViewGroup {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.d(TAG, "dispatchTouchEvent: " + ev.getAction());
         //如果关闭了侧滑 直接super
         if (!this.isEnableSwipe) {
             return super.dispatchTouchEvent(ev);
@@ -369,8 +372,17 @@ public class SwipeMenuLayout extends ViewGroup {
                 scrollTo((Integer) animation.getAnimatedValue(), 0);
             }
         });
+        mExpandAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (mSwipeMenuStateListener != null) {
+                    mSwipeMenuStateListener.menuIsOpen(true);
+                }
+            }
+        });
         mExpandAnim.setInterpolator(new OvershootInterpolator());
-        mExpandAnim.setDuration(300).start();
+        mExpandAnim.setDuration(animDuration).start();
     }
 
     /**
@@ -384,6 +396,9 @@ public class SwipeMenuLayout extends ViewGroup {
         if (null != mContentView) {
             mContentView.setLongClickable(true);
         }
+        if (getScrollX()==0) {
+            return;
+        }
         mCloseAnim = ValueAnimator.ofInt(getScrollX(), 0);
         mCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -391,8 +406,17 @@ public class SwipeMenuLayout extends ViewGroup {
                 scrollTo((Integer) animation.getAnimatedValue(), 0);
             }
         });
+        mCloseAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (mSwipeMenuStateListener != null) {
+                    mSwipeMenuStateListener.menuIsOpen(false);
+                }
+            }
+        });
         mCloseAnim.setInterpolator(new AccelerateInterpolator());
-        mCloseAnim.setDuration(300).start();
+        mCloseAnim.setDuration(animDuration).start();
     }
 
     //清除动画 防止上个动画没执行完 用户操作了另一个item
@@ -429,7 +453,6 @@ public class SwipeMenuLayout extends ViewGroup {
         }
     }
 
-
     //展开时，禁止自身的长按
     @Override
     public boolean performLongClick() {
@@ -437,6 +460,11 @@ public class SwipeMenuLayout extends ViewGroup {
             return true;
         }
         return super.performLongClick();
+    }
+
+    //获取上一个打开的view，用来关闭 上一个打开的。暂时应该用不到
+    public SwipeMenuLayout getCacheView(){
+        return mCacheView;
     }
 
     //当前是否展开
@@ -484,4 +512,7 @@ public class SwipeMenuLayout extends ViewGroup {
         isClickMenuAndClose = clickMenuAndClose;
     }
 
+    public void setSwipeMenuStateListener(SwipeMenuStateListener listener){
+        this.mSwipeMenuStateListener = listener;
+    }
 }
