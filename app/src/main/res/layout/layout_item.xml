@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.ljp.swipemenulayout.SwipeMenuLayout
+<cn.ljp.swipemenu.SwipeMenuLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe"
@@ -36,4 +36,4 @@
         android:background="#f00"
         android:text="删除"/>
 
-</com.ljp.swipemenulayout.SwipeMenuLayout>
+</cn.ljp.swipemenu.SwipeMenuLayout>

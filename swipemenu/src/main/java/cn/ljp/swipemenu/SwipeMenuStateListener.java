@@ -1,4 +1,4 @@
-package com.ljp.swipemenulayout;
+package cn.ljp.swipemenu;
 
 
 /*
