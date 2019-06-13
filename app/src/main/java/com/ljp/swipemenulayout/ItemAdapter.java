@@ -46,16 +46,22 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         final String item = mShowItems.get(i);
-        if (i % 4 == 0) {
-            viewHolder.mSwipe.setEnableLeftMenu(true);
-            viewHolder.mTv1.setText(item + "，菜单在左");
+        viewHolder.mSwipe.setEnableLeftMenu(i % 4 == 0);
+        String text = item + "，菜单在" + (i % 4 == 0 ? "左； " : "右； ");
+        if (i % 3 == 0) {
+            viewHolder.mSwipe.setOpenChoke(false);
+            text += "我是无阻塞的； ";
         } else {
-            viewHolder.mSwipe.setEnableLeftMenu(false);
-            viewHolder.mTv1.setText(item + "，菜单在右");
+            viewHolder.mSwipe.setOpenChoke(true);
+            text += "我是有阻塞的； ";
         }
         if (i % 5 == 0) {
-            viewHolder.mTv1.setText(item + "，点击我可以展开菜单");
+            viewHolder.mSwipe.setClickMenuAndClose(true);
+            text += "点击我可以展开菜单";
+        } else {
+            viewHolder.mSwipe.setClickMenuAndClose(false);
         }
+        viewHolder.mTv1.setText(text);
 
         viewHolder.mLl_item.setOnClickListener(new View.OnClickListener() {
             @Override
