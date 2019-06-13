@@ -4,6 +4,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
 
 ![](https://raw.githubusercontent.com/ljphawk/SwipeMenuLayout/master/gif/gif1.gif)
 
+
 ##目前功能如下
 - 支持启用或禁用侧滑菜单
 - 支持菜单在条目的左边或者右边
