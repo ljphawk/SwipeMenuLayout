@@ -100,10 +100,6 @@ public class SwipeMenuLayout extends ViewGroup {
         mScaledMaximumFlingVelocity = ViewConfiguration.get(mContext).getScaledMaximumFlingVelocity();
     }
 
-    public void setEnableRightSwipe(boolean enableRightSwipe) {
-        isEnableLeftMenu = enableRightSwipe;
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -333,9 +329,7 @@ public class SwipeMenuLayout extends ViewGroup {
         return super.onInterceptTouchEvent(ev);
     }
 
-    /**
-     * @param event 向VelocityTracker添加MotionEvent
-     */
+   //向VelocityTracker添加MotionEvent
     private void acquireVelocityTracker(final MotionEvent event) {
         if (null == mVelocityTracker) {
             mVelocityTracker = VelocityTracker.obtain();
@@ -343,9 +337,7 @@ public class SwipeMenuLayout extends ViewGroup {
         mVelocityTracker.addMovement(event);
     }
 
-    /**
-     * * 释放VelocityTracker
-     */
+    //释放VelocityTracker
     private void recycleVelocityTracker() {
         if (null != mVelocityTracker) {
             mVelocityTracker.clear();
@@ -452,6 +444,15 @@ public class SwipeMenuLayout extends ViewGroup {
             mCacheView = null;
         }
     }
+    //快速打开 没有动画时间
+    public void quickExpandMenu() {
+        if (getScrollX() == 0) {
+            cleanAnim();
+            int x = isEnableLeftMenu ? -mMenuWidth : mMenuWidth;
+            scrollTo(x, 0);
+            mCacheView = null;
+        }
+    }
 
     //展开时，禁止自身的长按
     @Override
@@ -478,8 +479,9 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //设置是否打开阻塞
-    public void setOpenChoke(boolean openChoke) {
+    public SwipeMenuLayout setOpenChoke(boolean openChoke) {
         isOpenChoke = openChoke;
+        return this;
     }
 
     //获取是否打开了侧滑菜单功能
@@ -488,8 +490,9 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //设置是否开启侧滑菜单
-    public void setEnableSwipe(boolean enableSwipe) {
+    public SwipeMenuLayout setEnableSwipe(boolean enableSwipe) {
         isEnableSwipe = enableSwipe;
+        return this;
     }
 
     //获取是否打开了 菜单在左侧功能
@@ -498,8 +501,9 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //设置菜单是否在左侧
-    public void setEnableLeftMenu(boolean enableLeftMenu) {
+    public SwipeMenuLayout setEnableLeftMenu(boolean enableLeftMenu) {
         isEnableLeftMenu = enableLeftMenu;
+        return this;
     }
 
     //获取点击菜单后是否直接关闭菜单
@@ -508,11 +512,13 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //设置 点击菜单后是否直接关闭菜单
-    public void setClickMenuAndClose(boolean clickMenuAndClose) {
+    public SwipeMenuLayout setClickMenuAndClose(boolean clickMenuAndClose) {
         isClickMenuAndClose = clickMenuAndClose;
+        return this;
     }
 
-    public void setSwipeMenuStateListener(SwipeMenuStateListener listener){
+    public SwipeMenuLayout setSwipeMenuStateListener(SwipeMenuStateListener listener){
         this.mSwipeMenuStateListener = listener;
+        return this;
     }
 }

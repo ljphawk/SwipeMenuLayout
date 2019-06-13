@@ -47,17 +47,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         final String item = mShowItems.get(i);
         if (i % 4 == 0) {
-            viewHolder.mSwipe.setEnableRightSwipe(true);
+            viewHolder.mSwipe.setEnableLeftMenu(true);
             viewHolder.mTv1.setText(item + "，菜单在左");
         } else {
-            viewHolder.mSwipe.setEnableRightSwipe(false);
+            viewHolder.mSwipe.setEnableLeftMenu(false);
             viewHolder.mTv1.setText(item + "，菜单在右");
         }
+        if (i % 5 == 0) {
+            viewHolder.mTv1.setText(item + "，点击我可以展开菜单");
+        }
+
         viewHolder.mLl_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "1111", Toast.LENGTH_SHORT).show();
-                viewHolder.mSwipe.expandMenuAnim();
+                if (i % 5 == 0) {
+                    viewHolder.mSwipe.expandMenuAnim();
+                } else {
+                    ToastUtil.showToast(mContext, "点击了条目" + i);
+                }
             }
         });
         viewHolder.mLl_item.setOnLongClickListener(new View.OnLongClickListener() {
@@ -70,15 +77,17 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         viewHolder.mTv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "2222", Toast.LENGTH_SHORT).show();
+                ToastUtil.showToast(mContext, "点击了菜单->取消关注");
             }
         });
         viewHolder.mTv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "删除了", Toast.LENGTH_SHORT).show();
+                ToastUtil.showToast(mContext, "点击了菜单->删除");
                 mShowItems.remove(i);
+                //用这个 主要是解决了之前有个删除后刷新，其他条目菜单也会做个菜单动画bug
                 notifyDataSetChanged();
+                //或者 notifyItemChanged(i); 也行
             }
         });
     }
@@ -99,10 +108,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         public ViewHolder(@NonNull View view) {
             super(view);
             mLl_item = view.findViewById(R.id.ll_item);
-            mTv1 = view.findViewById(R.id.tv1);
-            mTv2 = view.findViewById(R.id.tv2);
-            mTv3 = view.findViewById(R.id.tv3);
-            mSwipe = view.findViewById(R.id.swipe);
+            mTv1 = view.findViewById(R.id.tv_content);
+            mTv2 = view.findViewById(R.id.tv_menu1);
+            mTv3 = view.findViewById(R.id.tv_menu2);
+            mSwipe = view.findViewById(R.id.swipe_menu_layout);
         }
     }
 }
