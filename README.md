@@ -5,7 +5,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
 ![](https://raw.githubusercontent.com/ljphawk/SwipeMenuLayout/master/gif/gif1.gif)
 
 
-##目前功能如下
+## 目前功能如下
 - 支持启用或禁用侧滑菜单
 - 支持菜单在条目的左边或者右边
 - 支持滑动阻塞或非阻塞
@@ -13,7 +13,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
 - 支持menu打开和关闭的回调监听
 - 可快速打开和关闭menu
 
-##简单用例
+## 简单用例
 - 只需正常编写xml文件即可
 - SwipeMenuLayout中第一个view为item布局，后面的为menu布局
 - 关于布局的宽高问题，特殊情况简单说明一下
@@ -79,7 +79,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
     </cn.ljp.swipemenu.SwipeMenuLayout>
 
 
-##属性说明
+## 属性说明
     
 **代码示例**
 
