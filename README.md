@@ -51,8 +51,8 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
 		    android:id="@+id/ll_item"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent">
-		    	<!--也可以是复杂的item布局-->
-			    <TextView
+		    <!--也可以是复杂的item布局-->
+			<TextView
 			    android:id="@+id/tv_content"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
@@ -133,8 +133,8 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
 		    android:id="@+id/ll_item"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent">
-		    	<!--也可以是复杂的item布局-->
-			    <TextView
+		    <!--也可以是复杂的item布局-->
+			<TextView
 			    android:id="@+id/tv_content"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
