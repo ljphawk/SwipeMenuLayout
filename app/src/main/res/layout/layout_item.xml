@@ -1,44 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.ljp.swipemenu.SwipeMenuLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swipe_menu_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="60dp"
-    android:background="#e9e9e9"
-    app:isEnableLeftMenu="false"
-    app:isEnableSwipe="true"
-    app:isClickMenuAndClose="false"
-    app:isOpenChoke="true">
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
 
-    <RelativeLayout
-        android:id="@+id/ll_item"
+    <cn.ljp.swipemenu.SwipeMenuLayout
+        android:id="@+id/swipe_menu_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <!--也可以是复杂的item布局-->
+        android:layout_height="60dp"
+        android:background="#e9e9e9"
+        app:isClickMenuAndClose="false"
+        app:isEnableLeftMenu="false"
+        app:isEnableSwipe="true"
+        app:isOpenChoke="true">
+
+        <RelativeLayout
+            android:id="@+id/ll_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <!--也可以是复杂的item布局-->
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
         <TextView
-            android:id="@+id/tv_content"
-            android:layout_width="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_height="wrap_content"/>
-    </RelativeLayout>
+            android:id="@+id/tv_menu1"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="#fff"
+            android:gravity="center"
+            android:text="取消关注"/>
 
-    <TextView
-        android:id="@+id/tv_menu1"
-        android:layout_width="60dp"
-        android:gravity="center"
-        android:layout_height="match_parent"
-        android:background="#fff"
-        android:text="取消关注"/>
+        <TextView
+            android:id="@+id/tv_menu2"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="#f00"
+            android:gravity="center"
+            android:text="删除"
+            android:textColor="#fff"/>
 
-    <TextView
-        android:id="@+id/tv_menu2"
-        android:gravity="center"
-        android:textColor="#fff"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:background="#f00"
-        android:text="删除"/>
-
-</cn.ljp.swipemenu.SwipeMenuLayout>
+    </cn.ljp.swipemenu.SwipeMenuLayout>
+</RelativeLayout>
