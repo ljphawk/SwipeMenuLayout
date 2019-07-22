@@ -45,5 +45,6 @@ public class ItemAdapter2 extends BaseQuickAdapter<String, BaseViewHolder> {
             mSwipe.setClickMenuAndClose(false);
         }
         ((TextView) helper.getView(R.id.tv_content)).setText(text);
+        helper.addOnClickListener(R.id.tv_menu1).addOnClickListener(R.id.tv_menu2);
     }
 }

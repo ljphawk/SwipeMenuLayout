@@ -103,8 +103,6 @@ public class SwipeMenuLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //让自己可点击 一定要设置
-        setClickable(true);
         //获取测量模式
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         //内容view的宽度
@@ -117,8 +115,6 @@ public class SwipeMenuLayout extends ViewGroup {
             if (childAt.getVisibility() == View.GONE) {
                 continue;
             }
-            // 一定要设置
-            childAt.setClickable(true);
             LayoutParams layoutParams = childAt.getLayoutParams();
             if (i == 0) {
                 //让itemView的宽度为parentView的宽度
@@ -199,12 +195,13 @@ public class SwipeMenuLayout extends ViewGroup {
                 mLastRawX = ev.getRawX();
                 chokeIntercept = false;
                 if (null != mCacheView) {
+                    //只要有一个侧滑菜单处于打开状态， 就不给外层布局上下滑动了
+                    getParent().requestDisallowInterceptTouchEvent(true);
                     if (mCacheView != this) {
                         mCacheView.closeMenuAnim();
                         chokeIntercept = isOpenChoke;
+                        return true;
                     }
-                    //只要有一个侧滑菜单处于打开状态， 就不给外层布局上下滑动了
-                    getParent().requestDisallowInterceptTouchEvent(true);
                     break;
                 }
                 break;
@@ -278,6 +275,9 @@ public class SwipeMenuLayout extends ViewGroup {
                 }
                 //释放VelocityTracker
                 recycleVelocityTracker();
+                if (Math.abs(ev.getRawX() - mFirstRawX) >= mScaledTouchSlop) {
+                    return true;
+                }
                 break;
             default:
                 break;
@@ -291,18 +291,8 @@ public class SwipeMenuLayout extends ViewGroup {
             return super.onInterceptTouchEvent(ev);
         }
         switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                //移动了就不能有长按事件
-                mContentView.setLongClickable(false);
-                break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                //抬手后可以长按
-                if (getScrollX() == 0) {
-                    mContentView.setLongClickable(true);
-                }
                 //大于系统给出的这个数值，就认为是滑动了 事件进行拦截
                 if (Math.abs(ev.getRawX() - mFirstRawX) >= mScaledTouchSlop) {
                     return true;
@@ -329,7 +319,7 @@ public class SwipeMenuLayout extends ViewGroup {
         return super.onInterceptTouchEvent(ev);
     }
 
-   //向VelocityTracker添加MotionEvent
+    //向VelocityTracker添加MotionEvent
     private void acquireVelocityTracker(final MotionEvent event) {
         if (null == mVelocityTracker) {
             mVelocityTracker = VelocityTracker.obtain();
@@ -384,11 +374,7 @@ public class SwipeMenuLayout extends ViewGroup {
         mCacheView = null;
         //清除动画
         cleanAnim();
-        //解除长按事件
-        if (null != mContentView) {
-            mContentView.setLongClickable(true);
-        }
-        if (getScrollX()==0) {
+        if (getScrollX() == 0) {
             return;
         }
         mCloseAnim = ValueAnimator.ofInt(getScrollX(), 0);
@@ -444,6 +430,7 @@ public class SwipeMenuLayout extends ViewGroup {
             mCacheView = null;
         }
     }
+
     //快速打开 没有动画时间
     public void quickExpandMenu() {
         if (getScrollX() == 0) {
@@ -464,7 +451,7 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //获取上一个打开的view，用来关闭 上一个打开的。暂时应该用不到
-    public SwipeMenuLayout getCacheView(){
+    public SwipeMenuLayout getCacheView() {
         return mCacheView;
     }
 
@@ -517,7 +504,7 @@ public class SwipeMenuLayout extends ViewGroup {
         return this;
     }
 
-    public SwipeMenuLayout setSwipeMenuStateListener(SwipeMenuStateListener listener){
+    public SwipeMenuLayout setSwipeMenuStateListener(SwipeMenuStateListener listener) {
         this.mSwipeMenuStateListener = listener;
         return this;
     }
