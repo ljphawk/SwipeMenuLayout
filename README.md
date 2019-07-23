@@ -32,7 +32,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
     }	
 	//第二步 moudler中依赖
 	dependencies {
-		implementation 'com.github.ljphawk:SwipeMenuLayout:1.03'
+		implementation 'com.github.ljphawk:SwipeMenuLayout:1.02'
 	}
 
 	<!--父容器为SwipeMenuLayout后，正常编写xml就行啦 -->
