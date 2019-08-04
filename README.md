@@ -78,7 +78,7 @@ SwipeMenuLayout是一个零耦合的侧滑菜单，使用方式及其简单！�
     
     </cn.ljp.swipemenu.SwipeMenuLayout>
 
-
+注：点击事件和长按事件请设置给SwipeMenuLayout
 ## 属性说明
     
 **代码示例**
