@@ -4,6 +4,7 @@ package com.ljp.swipemenulayout;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import cn.ljp.swipemenu.SwipeMenuLayout;
  */
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
+    private static final String TAG = "ItemAdapter";
     private Context mContext;
     private List<String> mShowItems = new ArrayList<>();
 
@@ -63,20 +65,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
         viewHolder.mTv1.setText(text);
 
-        viewHolder.mLl_item.setOnClickListener(new View.OnClickListener() {
+        viewHolder.mSwipe.setOnClickListener(new View.OnClickListener() {
+//        viewHolder.mLl_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (i % 5 == 0) {
                     viewHolder.mSwipe.expandMenuAnim();
                 } else {
+                    viewHolder.mSwipe.closeMenuAnim();
                     ToastUtil.showToast(mContext, "点击了条目" + i);
+                    Log.d(TAG, "onClick: 点击了条目" + i);
                 }
             }
         });
-        viewHolder.mLl_item.setOnLongClickListener(new View.OnLongClickListener() {
+        viewHolder.mSwipe.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Toast.makeText(mContext, "我长按了" + item, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onLongClick: 我长按了" + item);
                 return true;
             }
         });
@@ -84,12 +90,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 ToastUtil.showToast(mContext, "点击了菜单->取消关注");
+                Log.d(TAG, "onClick: 点击了菜单->取消关注");
             }
         });
         viewHolder.mTv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ToastUtil.showToast(mContext, "点击了菜单->删除");
+                Log.d(TAG, "onClick: 点击了菜单->删除");
                 mShowItems.remove(i);
                 //用这个 主要是解决了之前有个删除后刷新，其他条目菜单也会做个菜单动画bug
                 notifyDataSetChanged();

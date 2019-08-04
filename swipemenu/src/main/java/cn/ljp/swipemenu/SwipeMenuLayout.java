@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -98,13 +99,13 @@ public class SwipeMenuLayout extends ViewGroup {
         mScaledTouchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
         // 获得允许执行fling （抛）的最大速度值 （惯性速度）
         mScaledMaximumFlingVelocity = ViewConfiguration.get(mContext).getScaledMaximumFlingVelocity();
+        setClickable(true);
+
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //让自己可点击 一定要设置
-        setClickable(true);
         //获取测量模式
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         //内容view的宽度
@@ -117,8 +118,6 @@ public class SwipeMenuLayout extends ViewGroup {
             if (childAt.getVisibility() == View.GONE) {
                 continue;
             }
-            // 一定要设置
-            childAt.setClickable(true);
             LayoutParams layoutParams = childAt.getLayoutParams();
             if (i == 0) {
                 //让itemView的宽度为parentView的宽度
@@ -173,42 +172,86 @@ public class SwipeMenuLayout extends ViewGroup {
         }
     }
 
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        //如果关闭了侧滑 直接super
-        if (!this.isEnableSwipe) {
-            return super.dispatchTouchEvent(ev);
-        }
-        acquireVelocityTracker(ev);
-        final VelocityTracker verTracker = mVelocityTracker;
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                /*
-                多跟手指的触摸处理  isTouch为true的话 表示之前已经有一个down事件了,
-                再有其他的down事件 我返回false不处理了 (返回false时 只会执行一个down事件)
-                 */
-                if (isFingerTouch) {
-                    return false;
-                } else {
-                    isFingerTouch = true;
-                }
-                //第一个触点的id， 此时可能有多个触点，但至少一个，计算滑动速率用
-                mPointerId = ev.getPointerId(0);
-                getParent().requestDisallowInterceptTouchEvent(false);
                 mFirstRawX = ev.getRawX();
-                mLastRawX = ev.getRawX();
+                getParent().requestDisallowInterceptTouchEvent(false);
+                //关闭上一个打开的SwipeMenuLayout
                 chokeIntercept = false;
                 if (null != mCacheView) {
                     if (mCacheView != this) {
                         mCacheView.closeMenuAnim();
                         chokeIntercept = isOpenChoke;
                     }
-                    //只要有一个侧滑菜单处于打开状态， 就不给外层布局上下滑动了
+                    //屏蔽父类的事件,只要有一个侧滑菜单处于打开状态， 就不给外层布局上下滑动了
                     getParent().requestDisallowInterceptTouchEvent(true);
-                    break;
                 }
                 break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                //多指触摸状态改变
+                isFingerTouch = false;
+                //如果已经侧滑出菜单，菜单范围内的点击事件不拦截
+                if (Math.abs(getScrollX()) == Math.abs(mMenuWidth)) {
+                    //菜单范围的判断
+                    if ((isEnableLeftMenu && ev.getX() < mMenuWidth)
+                            || (!isEnableLeftMenu && ev.getX() > getMeasuredWidth() - mMenuWidth)) {
+                        //点击菜单关闭侧滑
+                        if (isClickMenuAndClose) {
+                            closeMenuAnim();
+                        }
+                        break;
+                    }
+                    //否则点击了item, 直接动画关闭
+                    closeMenuAnim();
+                    return true;
+                }
+                break;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!this.isEnableSwipe) {
+            return super.onInterceptTouchEvent(ev);
+        }
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //多跟手指的触摸处理  isFingerTouch为true的话 表示之前已经有一个down事件了,
+                if (isFingerTouch) {
+                    return true;
+                } else {
+                    isFingerTouch = true;
+                }
+                //第一个触点的id， 此时可能有多个触点，但至少一个，计算滑动速率用
+                mPointerId = ev.getPointerId(0);
+                mLastRawX = ev.getRawX();
+                break;
             case MotionEvent.ACTION_MOVE:
+                //大于系统给出的这个数值，就认为是滑动了 事件进行拦截,在onTouch中进行逻辑操作
+                if (Math.abs(ev.getRawX() - mFirstRawX) >= mScaledTouchSlop) {
+                    longClickable(false);
+                    return true;
+                }
+                break;
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        //如果关闭了侧滑 直接super
+        if (!this.isEnableSwipe) {
+            return super.onTouchEvent(ev);
+        }
+        acquireVelocityTracker(ev);
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                //有阻塞
                 if (chokeIntercept) {
                     break;
                 }
@@ -239,13 +282,14 @@ public class SwipeMenuLayout extends ViewGroup {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                //多指触摸状态改变
-                isFingerTouch = false;
-                if (!chokeIntercept) {
-                    //unitis值为1000（毫秒）时间单位内运动了多少个像素 正负最多为mScaledMaximumFlingVelocity
-                    verTracker.computeCurrentVelocity(1000, mScaledMaximumFlingVelocity);
+                //unitis值为1000（毫秒）时间单位内运动了多少个像素 正负最多为mScaledMaximumFlingVelocity
+                mVelocityTracker.computeCurrentVelocity(1000, mScaledMaximumFlingVelocity);
+                float velocityX = mVelocityTracker.getXVelocity(mPointerId);
+                //释放VelocityTracker
+                recycleVelocityTracker();
+                if (!chokeIntercept && Math.abs(ev.getRawX() - mFirstRawX) >= mScaledTouchSlop) {
                     //获取x方向的运动速度
-                    float velocityX = verTracker.getXVelocity(mPointerId);
+                    Log.d(TAG, "onTouchEvent: " + velocityX);
                     //滑动速度超过1000  认为是快速滑动了
                     if (Math.abs(velocityX) > 1000) {
                         if (velocityX < -1000) {//左滑了
@@ -275,59 +319,13 @@ public class SwipeMenuLayout extends ViewGroup {
                             closeMenuAnim();
                         }
                     }
+                    return true;
                 }
-                //释放VelocityTracker
-                recycleVelocityTracker();
-                break;
-            default:
                 break;
         }
-        return super.dispatchTouchEvent(ev);
+        return super.onTouchEvent(ev);
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!this.isEnableSwipe) {
-            return super.onInterceptTouchEvent(ev);
-        }
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                //移动了就不能有长按事件
-                mContentView.setLongClickable(false);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                //抬手后可以长按
-                if (getScrollX() == 0) {
-                    mContentView.setLongClickable(true);
-                }
-                //大于系统给出的这个数值，就认为是滑动了 事件进行拦截
-                if (Math.abs(ev.getRawX() - mFirstRawX) >= mScaledTouchSlop) {
-                    return true;
-                } else
-                    //小于滑动值 就认为是点击行为
-                    //如果已经侧滑出菜单，菜单范围内的点击事件不拦截 直接break掉
-                    if (getScrollX() != 0) {
-                        //没有开启的话 才走判断逻辑
-                        if ((isEnableLeftMenu && ev.getX() <= mMenuWidth)
-                                || (!isEnableLeftMenu && ev.getX() > getMeasuredWidth() - mMenuWidth)) {
-                            if (isClickMenuAndClose) {
-                                closeMenuAnim();
-                            }
-                            break;
-                        }
-                        //否则点击了 直接动画关闭
-                        closeMenuAnim();
-                        return true;
-                    }
-                break;
-            default:
-                break;
-        }
-        return super.onInterceptTouchEvent(ev);
-    }
 
     //向VelocityTracker添加MotionEvent
     private void acquireVelocityTracker(final MotionEvent event) {
@@ -348,14 +346,11 @@ public class SwipeMenuLayout extends ViewGroup {
 
 
     public void expandMenuAnim() {
+        longClickable(false);
         //清除动画
         cleanAnim();
         //展开就赋值
         mCacheView = SwipeMenuLayout.this;
-        //禁止长按事件
-        if (null != mContentView) {
-            mContentView.setLongClickable(false);
-        }
 
         mExpandAnim = ValueAnimator.ofInt(getScrollX(), isEnableLeftMenu ? -mMenuWidth : mMenuWidth);
         mExpandAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -384,13 +379,6 @@ public class SwipeMenuLayout extends ViewGroup {
         mCacheView = null;
         //清除动画
         cleanAnim();
-        //解除长按事件
-        if (null != mContentView) {
-            mContentView.setLongClickable(true);
-        }
-        if (getScrollX()==0) {
-            return;
-        }
         mCloseAnim = ValueAnimator.ofInt(getScrollX(), 0);
         mCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -402,6 +390,7 @@ public class SwipeMenuLayout extends ViewGroup {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                longClickable(true);
                 if (mSwipeMenuStateListener != null) {
                     mSwipeMenuStateListener.menuIsOpen(false);
                 }
@@ -444,6 +433,7 @@ public class SwipeMenuLayout extends ViewGroup {
             mCacheView = null;
         }
     }
+
     //快速打开 没有动画时间
     public void quickExpandMenu() {
         if (getScrollX() == 0) {
@@ -452,6 +442,14 @@ public class SwipeMenuLayout extends ViewGroup {
             scrollTo(x, 0);
             mCacheView = null;
         }
+    }
+
+    //展开时，禁止自身的长按
+    private void longClickable(boolean enable) {
+        setLongClickable(enable);
+//        if (null != mContentView) {
+//            mContentView.setLongClickable(enable);
+//        }
     }
 
     //展开时，禁止自身的长按
@@ -464,7 +462,7 @@ public class SwipeMenuLayout extends ViewGroup {
     }
 
     //获取上一个打开的view，用来关闭 上一个打开的。暂时应该用不到
-    public SwipeMenuLayout getCacheView(){
+    public SwipeMenuLayout getCacheView() {
         return mCacheView;
     }
 
@@ -517,7 +515,7 @@ public class SwipeMenuLayout extends ViewGroup {
         return this;
     }
 
-    public SwipeMenuLayout setSwipeMenuStateListener(SwipeMenuStateListener listener){
+    public SwipeMenuLayout setSwipeMenuStateListener(SwipeMenuStateListener listener) {
         this.mSwipeMenuStateListener = listener;
         return this;
     }
