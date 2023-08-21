@@ -265,16 +265,16 @@ public class SwipeMenuLayout extends ViewGroup {
                 //超过范围的话--->归位
                 //目前是右滑的话 （菜单在左边）
                 if (isEnableLeftMenu) {
-                    if (getScrollX() < -mMenuWidth) {
-                        scrollTo(-mMenuWidth, 0);
+                    if (getScrollX() < -(mMenuWidth-1)) {
+                        scrollTo(-(mMenuWidth-1), 0);
                     } else if (getScrollX() > 0) {
                         scrollTo(0, 0);
                     }
                 } else {
                     if (getScrollX() < 0) {
                         scrollTo(0, 0);
-                    } else if (getScrollX() > mMenuWidth) {
-                        scrollTo(mMenuWidth, 0);
+                    } else if (getScrollX() > (mMenuWidth-1)) {
+                        scrollTo((mMenuWidth-1), 0);
                     }
                 }
                 //重新赋值
