@@ -195,7 +195,7 @@ public class SwipeMenuLayout extends ViewGroup {
                 //多指触摸状态改变
                 isFingerTouch = false;
                 //如果已经侧滑出菜单，菜单范围内的点击事件不拦截
-                if (Math.abs(getScrollX()) == Math.abs(mMenuWidth)) {
+                if (Math.abs(getScrollX()) == Math.abs(mMenuWidth) && mCacheView != null) {
                     //菜单范围的判断
                     if ((isEnableLeftMenu && ev.getX() < mMenuWidth)
                             || (!isEnableLeftMenu && ev.getX() > getMeasuredWidth() - mMenuWidth)) {
@@ -265,16 +265,16 @@ public class SwipeMenuLayout extends ViewGroup {
                 //超过范围的话--->归位
                 //目前是右滑的话 （菜单在左边）
                 if (isEnableLeftMenu) {
-                    if (getScrollX() < -(mMenuWidth-1)) {
-                        scrollTo(-(mMenuWidth-1), 0);
+                    if (getScrollX() < -mMenuWidth) {
+                        scrollTo(-mMenuWidth, 0);
                     } else if (getScrollX() > 0) {
                         scrollTo(0, 0);
                     }
                 } else {
                     if (getScrollX() < 0) {
                         scrollTo(0, 0);
-                    } else if (getScrollX() > (mMenuWidth-1)) {
-                        scrollTo((mMenuWidth-1), 0);
+                    } else if (getScrollX() > mMenuWidth) {
+                        scrollTo(mMenuWidth, 0);
                     }
                 }
                 //重新赋值
